@@ -271,15 +271,48 @@ function createAnnouncement() {
   const f1 = document.getElementById('fighter1').selectedOptions[0].text.trim();
   const f2 = document.getElementById('fighter2').selectedOptions[0].text.trim();
 
-  let betInput = document.getElementById('bet').value.trim() || "1";
+ let betInput = document.getElementById('bet').value.trim() || "1";
 
-// เอาเฉพาะตัวเลข
-let betNumber = parseFloat(betInput.replace(/,/g, ""));
+let bet = "";
 
-// ถ้าเป็นตัวเลข ให้คูณ 1,000,000 แล้ว format
-let bet = isNaN(betNumber)
-  ? betInput
-  : (betNumber * 1000000).toLocaleString() + " M";
+if (betInput.includes("+")) {
+  // มี + เช่น 5000 + จุ๊บ
+  let parts = betInput.split("+");
+  let numberPart = parts[0].trim();
+  let textPart = parts.slice(1).join("+").trim();
+
+  let num = parseFloat(numberPart.replace(/,/g, ""));
+
+  if (!isNaN(num)) {
+    let result = num * 1000; // ดันเป็นหลักล้าน
+    bet = result.toLocaleString() + " M + " + textPart;
+  } else {
+    bet = betInput;
+  }
+
+} else {
+  let num = parseFloat(betInput.replace(/,/g, ""));
+
+  if (!isNaN(num)) {
+    let result;
+    let suffix = "";
+
+    if (num < 10) {
+      result = num * 100;
+    } else if (num < 100) {
+      result = num * 1000;
+    } else if (num < 1000) {
+      result = num * 1000;
+    } else {
+      result = num * 1000;
+      suffix = " M";
+    }
+
+    bet = result.toLocaleString() + suffix;
+  } else {
+    bet = betInput;
+  }
+}
 
   let rounds = document.getElementById('rounds').value.trim() || "1";
   if (!rounds.includes("ไฟต์")) rounds = rounds + " ไฟต์";
