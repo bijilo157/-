@@ -296,14 +296,14 @@ let bet = isNaN(betNumber)
 
   const tags = "<@651025174338076683> <@537589376096665601>";
 
-  currentAnnouncement =
+currentAnnouncement =
 `${f1} Vs ${f2}
-สินเดิมพัน ${bet}
-จำนวนไฟต์ ${rounds}
-คูลดาวน์หมอ ${cooldown}
-สถานที่ ${location}
-เวลาเริ่ม ${startTime}
-เพิ่มเติม ${extra}
+สินเดิมพัน : ${bet}
+จำนวนไฟต์ : ${rounds}
+คูลดาวน์ : ${cooldown}
+สถานที่ : ${location}
+เวลาเริ่ม : ${startTime}
+เพิ่มเติม : ${extra}
 ${tags}`;
 
   document.getElementById('preview').textContent = currentAnnouncement;
