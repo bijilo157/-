@@ -192,8 +192,18 @@
   <option value="VRT">VARENTHAS [VRT]</option>
   <option value="YG">Yaoguai [YG]</option>
 </select>
-    <label for="bet">สินเดิมพัน</label>
-    <input id="bet" type="text" placeholder="เช่น 1" />
+  <label>สินเดิมพัน</label>
+<input id="bet" type="text" placeholder="เช่น 1 หรือ 5 + จุ๊บ">
+
+<select id="betUnit">
+<option value="1">หน่วย</option>
+<option value="10">สิบ</option>
+<option value="100">ร้อย</option>
+<option value="1000">พัน</option>
+<option value="10000">หมื่น</option>
+<option value="100000">แสน</option>
+<option value="1000000" selected>ล้าน</option>
+</select>
 
     <label for="rounds">จำนวนไฟต์</label>
     <input id="rounds" type="text" placeholder="เช่น 1" />
@@ -271,65 +281,56 @@ function createAnnouncement() {
   const f1 = document.getElementById('fighter1').selectedOptions[0].text.trim();
   const f2 = document.getElementById('fighter2').selectedOptions[0].text.trim();
 
- let betInput = document.getElementById('bet').value.trim() || "1";
+  let betInput = document.getElementById('bet').value.trim() || "1";
+  let unit = parseFloat(document.getElementById('betUnit').value);
 
-let bet = "";
+  let suffix = "";
+  if (unit == 1000000) suffix = " M";
+  else if (unit == 100000) suffix = " K";
 
-if (betInput.includes("+")) {
-  // มี + เช่น 5000 + จุ๊บ
-  let parts = betInput.split("+");
-  let numberPart = parts[0].trim();
-  let textPart = parts.slice(1).join("+").trim();
+  let bet = "";
 
-  let num = parseFloat(numberPart.replace(/,/g, ""));
+  if (betInput.includes("+")) {
+    let parts = betInput.split("+");
+    let numberPart = parts[0].trim();
+    let textPart = parts.slice(1).join("+").trim();
 
-  if (!isNaN(num)) {
-    let result = num * 1000; // ดันเป็นหลักล้าน
-    bet = result.toLocaleString() + " M + " + textPart;
-  } else {
-    bet = betInput;
-  }
+    let num = parseFloat(numberPart.replace(/,/g, ""));
 
-} else {
-  let num = parseFloat(betInput.replace(/,/g, ""));
-
-  if (!isNaN(num)) {
-    let result;
-    let suffix = "";
-
-    if (num < 10) {
-      result = num * 100;
-    } else if (num < 100) {
-      result = num * 1000;
-    } else if (num < 1000) {
-      result = num * 1000;
+    if (!isNaN(num)) {
+      let result = num * unit;
+      bet = result.toLocaleString() + suffix + " + " + textPart;
     } else {
-      result = num * 1000;
-      suffix = " M";
+      bet = betInput;
     }
 
-    bet = result.toLocaleString() + suffix;
   } else {
-    bet = betInput;
+    let num = parseFloat(betInput.replace(/,/g, ""));
+
+    if (!isNaN(num)) {
+      let result = num * unit;
+      bet = result.toLocaleString() + suffix;
+    } else {
+      bet = betInput;
+    }
   }
-}
 
   let rounds = document.getElementById('rounds').value.trim() || "1";
-  if (!rounds.includes("ไฟต์")) rounds = rounds + " ไฟต์";
+  if (!rounds.includes("ไฟต์")) rounds += " ไฟต์";
 
   let cooldown = document.getElementById('cooldown').value.trim() || "1";
-  if (!cooldown.includes("นาที")) cooldown = cooldown + " นาที";
+  if (!cooldown.includes("นาที")) cooldown += " นาที";
 
   let startTimeInput = document.getElementById('startTime').value.trim() || "21:30";
   let startTime = startTimeInput.replace(/\s+/g,"").replace(/(\d{2})(\d{2})/,"$1:$2");
-  if (!startTime.includes("นาที")) startTime = startTime + " นาที";
+  if (!startTime.includes("นาที")) startTime += " นาที";
 
   const location = document.getElementById('location').value.trim() || "สนามกีฬา";
   const extra = document.getElementById('extra').value.trim() || "-";
 
   const tags = "<@651025174338076683> <@537589376096665601>";
 
-currentAnnouncement =
+  currentAnnouncement =
 `${f1} Vs ${f2}
 สินเดิมพัน : ${bet}
 จำนวนไฟต์ : ${rounds}
@@ -340,9 +341,10 @@ currentAnnouncement =
 ${tags}`;
 
   document.getElementById('preview').textContent = currentAnnouncement;
+
   const btn = document.getElementById('copyBtn');
-  btn.classList.remove('success');
   btn.textContent = "💗 คัดลอกข้อความ";
+  btn.classList.remove('success');
 
   saveToHistory(currentAnnouncement);
 }
