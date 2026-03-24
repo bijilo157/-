@@ -271,8 +271,15 @@ function createAnnouncement() {
   const f1 = document.getElementById('fighter1').selectedOptions[0].text.trim();
   const f2 = document.getElementById('fighter2').selectedOptions[0].text.trim();
 
-  let bet = document.getElementById('bet').value.trim() || "1";
-  if (!bet.toUpperCase().includes("M")) bet = bet + " M";
+  let betInput = document.getElementById('bet').value.trim() || "1";
+
+// เอาเฉพาะตัวเลข
+let betNumber = parseFloat(betInput.replace(/,/g, ""));
+
+// ถ้าเป็นตัวเลข ให้คูณ 1,000,000 แล้ว format
+let bet = isNaN(betNumber)
+  ? betInput
+  : (betNumber * 1000000).toLocaleString() + " M";
 
   let rounds = document.getElementById('rounds').value.trim() || "1";
   if (!rounds.includes("ไฟต์")) rounds = rounds + " ไฟต์";
