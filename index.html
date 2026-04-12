@@ -64,9 +64,10 @@
     cursor: pointer; margin-top: 15px; box-shadow: 0 8px 20px rgba(83, 145, 229, 0.3);
   }
 
-  .auth-switch {
-    margin-top: 20px; color: var(--primary-blue); font-size: 13px; cursor: pointer; text-decoration: underline;
+  .auth-switch-group {
+    margin-top: 20px; display: flex; justify-content: center; gap: 15px; font-size: 13px;
   }
+  .auth-switch { color: var(--primary-blue); cursor: pointer; text-decoration: underline; }
 
   .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
   .nav-tabs button {
@@ -133,10 +134,23 @@
 
   <div id="sectionAuth">
     <div id="authHeader" class="auth-title">LOGIN</div>
-    <input type="text" id="authUser" class="custom-input" placeholder="ใส่ชื่อของคุณ">
-    <input type="password" id="authPass" class="custom-input" placeholder="ใส่รหัส PIN">
+    
+    <div id="authInputs">
+      <input type="text" id="authUser" class="custom-input" placeholder="ใส่ชื่อของคุณ">
+      <input type="password" id="authPass" class="custom-input" placeholder="ใส่รหัส PIN">
+    </div>
+
+    <div id="resetInputs" class="hidden">
+      <input type="password" id="newPinAuth" class="custom-input" placeholder="รหัส PIN ใหม่">
+    </div>
+
     <button id="btnAuthMain" class="btn-auth" onclick="handleAuth()">เข้าสู่ระบบ</button>
-    <div id="switchMode" class="auth-switch" onclick="toggleAuthMode()">ยังไม่มีบัญชี? ลงทะเบียนที่นี่</div>
+    
+    <div class="auth-switch-group">
+      <div id="switchReg" class="auth-switch" onclick="setAuthMode('register')">ลงทะเบียนสมาชิก</div>
+      <div id="switchReset" class="auth-switch" onclick="setAuthMode('reset')">เปลี่ยนรหัส PIN</div>
+      <div id="switchLogin" class="auth-switch hidden" onclick="setAuthMode('login')">ย้อนกลับ</div>
+    </div>
   </div>
 
   <div id="sectionApp" class="hidden">
@@ -190,7 +204,6 @@
         <div class="admin-menu-btn active" id="subTabUser" onclick="showSubAdmin('User')">👤 สมาชิก</div>
         <div class="admin-menu-btn" id="subTabGang" onclick="showSubAdmin('Gang')">🏠 แก๊ง</div>
         <div class="admin-menu-btn" id="subTabLoc" onclick="showSubAdmin('Loc')">📍 สถานที่</div>
-        <div class="admin-menu-btn" id="subTabPass" onclick="showSubAdmin('Pass')">🔑 เปลี่ยนรหัส</div>
       </div>
 
       <div id="subPageUser" class="admin-card sub-page">
@@ -216,12 +229,6 @@
           <button class="btn-add" onclick="addItem('loc')">เพิ่ม</button>
         </div>
         <div id="locTags" class="tag-container"></div>
-      </div>
-
-      <div id="subPagePass" class="admin-card sub-page hidden">
-        <span class="form-label">รหัส PIN ใหม่</span>
-        <input type="password" id="newPin" class="custom-input" placeholder="ใส่ PIN 4-6 หลัก">
-        <button class="btn-auth" onclick="changeMyPin()">อัปเดตรหัสผ่าน</button>
       </div>
     </div>
   </div>
@@ -251,7 +258,7 @@
   let historyData = [];
   let currentUser = null;
   let currentUserID = null;
-  let isLoginMode = true;
+  let authMode = 'login';
 
   const ALL_ROLES = [
     {id: 'owner', label: 'Owner'},
@@ -286,46 +293,74 @@
     renderHistory();
   });
 
-  window.toggleAuthMode = function() {
-    isLoginMode = !isLoginMode;
-    document.getElementById('authHeader').innerText = isLoginMode ? 'LOGIN' : 'REGISTER';
-    document.getElementById('btnAuthMain').innerText = isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
-    document.getElementById('switchMode').innerText = isLoginMode ? 'ยังไม่มีบัญชี? ลงทะเบียนที่นี่' : 'มีบัญชีแล้ว? เข้าสู่ระบบ';
+  window.setAuthMode = function(mode) {
+    authMode = mode;
+    const header = document.getElementById('authHeader');
+    const btn = document.getElementById('btnAuthMain');
+    const authInputs = document.getElementById('authInputs');
+    const authPassInput = document.getElementById('authPass');
+    const resetInputs = document.getElementById('resetInputs');
+    
+    authInputs.classList.add('hidden');
+    authPassInput.classList.remove('hidden');
+    resetInputs.classList.add('hidden');
+    document.getElementById('switchReg').classList.add('hidden');
+    document.getElementById('switchReset').classList.add('hidden');
+    document.getElementById('switchLogin').classList.remove('hidden');
+
+    if(mode === 'login') {
+      header.innerText = 'LOGIN';
+      btn.innerText = 'เข้าสู่ระบบ';
+      authInputs.classList.remove('hidden');
+      document.getElementById('switchReg').classList.remove('hidden');
+      document.getElementById('switchReset').classList.remove('hidden');
+      document.getElementById('switchLogin').classList.add('hidden');
+    } else if(mode === 'register') {
+      header.innerText = 'REGISTER';
+      btn.innerText = 'สมัครสมาชิก';
+      authInputs.classList.remove('hidden');
+    } else if(mode === 'reset') {
+      header.innerText = 'RESET PIN';
+      btn.innerText = 'ยืนยันการเปลี่ยน';
+      authInputs.classList.remove('hidden');
+      authPassInput.classList.add('hidden'); // ซ่อนช่อง PIN เดิมในโหมด Login
+      resetInputs.classList.remove('hidden');
+    }
   };
 
   window.handleAuth = function() {
     const u = document.getElementById('authUser').value.trim();
     const p = document.getElementById('authPass').value.trim();
-    if(!u || !p) return alert("กรุณากรอกข้อมูลให้ครบ");
+    if(!u) return alert("กรุณากรอกชื่อผู้ใช้");
 
     const userEntry = Object.entries(users).find(([id, data]) => data.user === u);
 
-    if(isLoginMode) {
+    if(authMode === 'login') {
+      if(!p) return alert("กรุณากรอกรหัส PIN");
       if(userEntry && userEntry[1].pass === p) {
         currentUserID = userEntry[0];
         currentUser = userEntry[1];
         sessionStorage.setItem('logged_user_id', currentUserID);
         startApp();
       } else { alert("ชื่อหรือ PIN ไม่ถูกต้อง"); }
-    } else {
+    } else if(authMode === 'register') {
+      if(!p) return alert("กรุณากรอกรหัส PIN");
       if(userEntry) return alert("ชื่อนี้ถูกใช้ไปแล้ว");
       const newUserRef = push(ref(db, 'users'));
-      const newData = { user: u, pass: p, roles: ['guest'] };
-      set(newUserRef, newData).then(() => {
+      set(newUserRef, { user: u, pass: p, roles: ['guest'] }).then(() => {
         alert("ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ");
-        isLoginMode = true;
-        toggleAuthMode();
+        setAuthMode('login');
       });
+    } else if(authMode === 'reset') {
+      const newP = document.getElementById('newPinAuth').value.trim();
+      if(!newP) return alert("กรุณากรอก PIN ใหม่");
+      if(userEntry) {
+        update(ref(db, `users/${userEntry[0]}`), { pass: newP }).then(() => {
+          alert("เปลี่ยนรหัสผ่านสำเร็จ!");
+          setAuthMode('login');
+        });
+      } else { alert("ไม่พบชื่อผู้ใช้งานนี้ในระบบ"); }
     }
-  };
-
-  window.changeMyPin = function() {
-    const newPin = document.getElementById('newPin').value.trim();
-    if(newPin.length < 4) return alert("PIN ต้องมีอย่างน้อย 4 ตัว");
-    update(ref(db, `users/${currentUserID}`), { pass: newPin }).then(() => {
-      alert("เปลี่ยนรหัสผ่านสำเร็จ!");
-      document.getElementById('newPin').value = '';
-    });
   };
 
   function startApp() {
