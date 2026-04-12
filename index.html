@@ -268,6 +268,13 @@
     {id: 'guest', label: 'ทั่วไป'}
   ];
 
+  function sortThaiEnglish(array) {
+    if(!array) return [];
+    return [...array].sort((a, b) => {
+      return a.localeCompare(b, 'th', { sensitivity: 'base', numeric: true });
+    });
+  }
+
   onValue(ref(db, 'users'), (snapshot) => {
     users = snapshot.val() || {};
     const hasJaokha = Object.values(users).some(u => u.user === 'Jaokha');
@@ -275,14 +282,18 @@
     renderAdmin();
   });
 
+  // แก้ไขจุดนี้: เปลี่ยนให้เป็นอาร์เรย์ว่างเมื่อลบจนหมด
   onValue(ref(db, 'gangs'), (snapshot) => {
-    gangs = snapshot.val() || ["21ˢᵗ [21ˢᵗ]", "28GEN [28]", "1995 [IX95]"];
+    let rawGangs = snapshot.val();
+    gangs = sortThaiEnglish(rawGangs || []); 
     renderOptions();
     renderAdmin();
   });
 
+  // แก้ไขจุดนี้: เปลี่ยนให้เป็นอาร์เรย์ว่างเมื่อลบจนหมด
   onValue(ref(db, 'locs'), (snapshot) => {
-    locs = snapshot.val() || ["เขาอำนวย", "ค่ายทหาร", "สนามบินล่าง"];
+    let rawLocs = snapshot.val();
+    locs = sortThaiEnglish(rawLocs || []);
     renderOptions();
     renderAdmin();
   });
@@ -323,7 +334,7 @@
       header.innerText = 'RESET PIN';
       btn.innerText = 'ยืนยันการเปลี่ยน';
       authInputs.classList.remove('hidden');
-      authPassInput.classList.add('hidden'); // ซ่อนช่อง PIN เดิมในโหมด Login
+      authPassInput.classList.add('hidden');
       resetInputs.classList.remove('hidden');
     }
   };
@@ -405,8 +416,9 @@
     const val = input.value.trim();
     if(!val) return;
     const targetRef = ref(db, type === 'gang' ? 'gangs' : 'locs');
-    const newData = type === 'gang' ? [...gangs, val] : [...locs, val];
-    set(targetRef, newData);
+    const currentData = type === 'gang' ? gangs : locs;
+    const newData = [...currentData, val];
+    set(targetRef, sortThaiEnglish(newData));
     input.value = '';
   };
 
@@ -414,7 +426,8 @@
     const targetRef = ref(db, type === 'gang' ? 'gangs' : 'locs');
     const data = type === 'gang' ? [...gangs] : [...locs];
     data.splice(index, 1);
-    set(targetRef, data);
+    // หากลบจนหมด Firebase จะมองเป็น null ให้ส่งอาร์เรย์ว่างแทนเพื่อความชัวร์
+    set(targetRef, data.length > 0 ? data : null);
   };
 
   function renderAdmin() {
@@ -426,7 +439,10 @@
     const body = document.getElementById('userTableBody'); 
     if(!body) return;
     body.innerHTML = '';
-    Object.entries(users).forEach(([key, u]) => {
+    
+    const sortedUserEntries = Object.entries(users).sort((a, b) => a[1].user.localeCompare(b[1].user, 'th'));
+
+    sortedUserEntries.forEach(([key, u]) => {
       if (u.user === 'Jaokha') return;
       const tr = document.createElement('tr');
       let rolesHtml = `<div class="role-checkbox-group">`;
