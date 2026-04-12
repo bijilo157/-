@@ -5,200 +5,163 @@
 <title>Fight Announcement System</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --primary-blue: #5391e5;
+    --bg-blue: #8ca6c4;
+    --input-bg: #f9f9f9;
+    --text-muted: #99a5b5;
+    --white: #ffffff;
+    --grad: linear-gradient(90deg, #6a82fb, #fc5c7d);
+    --pastel-blue: #eef2ff;
+  }
+
   body {
     font-family: 'Kanit', sans-serif;
-    background: #f0f2f5;
+    background: var(--bg-blue);
     margin: 0; padding: 20px;
-    display: flex; justify-content: center;
+    display: flex; justify-content: center; align-items: center;
     min-height: 100vh;
   }
+
   .container {
-    background: #ffffff;
-    max-width: 600px;
+    background: var(--white);
     width: 100%;
-    border-radius: 28px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    padding: 30px 30px;
+    max-width: 500px;
+    min-height: 550px;
+    border-radius: 50px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    padding: 50px 40px;
     text-align: center;
-  }
-  h2 {
-    color: #2c2c72;
-    margin-bottom: 25px;
-  }
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 6px;
-    text-align: left;
-    color: #3b3b99;
-  }
-  input[type="text"], select, textarea {
-    width: 100%;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-    border: 2px solid #b0c4ff;
-    border-radius: 16px;
-    font-size: 15px;
-    box-sizing: border-box;
-    outline: none;
-    transition: border 0.2s ease;
-  }
-  input[type="text"]:focus, select:focus, textarea:focus {
-    border-color: #6a82fb;
-  }
-  textarea { resize: vertical; min-height: 60px; }
-  button {
-    background: linear-gradient(135deg, #6a82fb, #fc5c7d);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 14px 0;
-    font-size: 17px;
-    font-weight: 700;
-    cursor: pointer;
-    width: 100%;
-    transition: transform 0.1s ease, box-shadow 0.2s ease;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  button:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.15); }
-  .nav-buttons {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  .nav-buttons button {
-    background: #e0e4ff;
-    color: #2c2c72;
-    margin: 0 6px;
-    width: auto;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-weight: 600;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  .nav-buttons button.active {
-    background: #6a82fb;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-  #preview {
-    background: #f0f4ff;
-    border-radius: 18px;
-    padding: 18px 20px;
-    margin-top: 15px;
-    white-space: pre-line;
-    font-weight: 600;
-    color: #1c1c4a;
-    text-align: left;
-    min-height: 110px;
-    font-size: 16px;
-  }
-  #historyList {
-    max-height: 480px;
-    overflow-y: auto;
-    text-align: left;
-  }
-  .history-card {
-    background: #e6eaff;
-    border-radius: 18px;
-    padding: 16px 22px;
-    margin-bottom: 15px;
     position: relative;
-    font-family: monospace;
-    white-space: pre-wrap;
-    color: #1c1c4a;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
-  .history-card .timestamp {
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #4b4b9b;
+
+  .container.app-mode { 
+    max-width: 750px; 
+    min-height: 850px; /* กำหนดความสูงขั้นต่ำให้คงที่ทุกหน้า */
   }
-  .history-card button.deleteBtn {
-    position: absolute;
-    bottom: 14px;
-    right: 14px;
-    background: #ff6b6b;
-    border: none;
-    border-radius: 14px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-weight: 700;
-    color: white;
-    font-size: 13px;
-    transition: background 0.2s ease, transform 0.1s ease;
+
+  .logout-corner {
+    position: absolute; top: 30px; right: 35px;
+    background: #ffeded; color: #ff5c5c; border: none;
+    padding: 6px 14px; border-radius: 12px;
+    font-weight: 600; font-size: 11px; cursor: pointer; z-index: 10;
   }
-  .history-card button.deleteBtn:hover {
-    background: #e63946;
-    transform: translateY(-1px);
+
+  .auth-title { color: var(--text-muted); font-size: 14px; letter-spacing: 2px; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; }
+
+  .custom-input {
+    width: 100%; background: var(--input-bg); border: 1.5px solid #eee;
+    border-radius: 25px; padding: 18px; font-size: 16px; text-align: center;
+    box-sizing: border-box; outline: none; margin-bottom: 15px; font-family: 'Kanit'; color: #555;
   }
+
+  .btn-auth {
+    background: var(--primary-blue); color: white; border: none; border-radius: 25px;
+    padding: 16px 0; width: 100%; font-size: 18px; font-weight: 700;
+    cursor: pointer; margin-top: 15px; box-shadow: 0 8px 20px rgba(83, 145, 229, 0.3);
+  }
+
+  .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
+  .nav-tabs button {
+    background: #e6eaff; border: none; padding: 10px 22px; border-radius: 15px;
+    font-weight: 600; color: #5391e5; cursor: pointer; font-size: 14px;
+  }
+  .nav-tabs button.active { background: var(--primary-blue); color: white; }
+
+  .admin-menu { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+  .admin-menu-btn {
+    background: #f8faff; border: 1px solid #edf2f7; padding: 10px 15px;
+    border-radius: 15px; font-size: 13px; font-weight: 600; color: #718096;
+    cursor: pointer; transition: 0.3s;
+  }
+  .admin-menu-btn.active { background: var(--primary-blue); color: white; border-color: var(--primary-blue); box-shadow: 0 4px 12px rgba(83, 145, 229, 0.3); }
+
+  .admin-card {
+    background: #ffffff; border-radius: 25px; padding: 25px;
+    border: 1px solid #f0f4f8; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.02);
+    min-height: 400px; /* เพิ่มความสูงขั้นต่ำให้การ์ดในหน้าแอดมิน */
+  }
+  
+  .admin-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+  .admin-input-small { 
+    flex: 1; padding: 12px 18px; border-radius: 15px; border: 1.5px solid #edf2f7; 
+    font-family: 'Kanit'; outline: none; font-size: 14px; background: #fdfdfd;
+  }
+  .btn-add { background: var(--primary-blue); color: white; border: none; border-radius: 15px; padding: 0 20px; cursor: pointer; font-weight: 700; }
+
+  .tag-container { display: flex; flex-wrap: wrap; gap: 10px; }
+  .tag { 
+    background: #f0f4ff; color: #5391e5; padding: 8px 15px; border-radius: 12px; 
+    font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+  }
+  .tag span { cursor: pointer; color: #ff8585; font-size: 16px; font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  th { background: #f8faff; color: #718096; padding: 12px; text-align: left; font-weight: 600; border-bottom: 2px solid #edf2f7; }
+  td { padding: 12px; border-bottom: 1px solid #f7fafc; color: #4a5568; vertical-align: top; }
+
+  .role-checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .role-item { display: flex; align-items: center; gap: 5px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+  .role-item input { cursor: pointer; width: 14px; height: 14px; }
+  .role-item.disabled { opacity: 0.5; cursor: not-allowed; }
+  .role-item.disabled input { cursor: not-allowed; }
+
+  .btn-delete { background: #fff5f5; color: #f56565; border: none; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 600; }
+
+  .form-label { display: block; text-align: left; font-size: 13px; font-weight: 700; color: #333; margin: 10px 0 5px 15px; }
+  .app-select { width: 100%; padding: 12px 20px; border-radius: 15px; border: 1.5px solid #b0c4ff; background: #fff; margin-bottom: 12px; font-family: 'Kanit'; outline: none; font-size: 14px; box-sizing: border-box; }
+  .btn-gradient { background: var(--grad); color: white; border: none; border-radius: 18px; padding: 14px; width: 100%; font-weight: 700; font-size: 16px; cursor: pointer; margin: 10px 0; transition: background 0.3s; }
+  .btn-copy-success { background: #48bb78 !important; }
+  #preview-box { background: #f0f4ff; border-radius: 20px; padding: 20px; min-height: 100px; text-align: left; font-size: 14px; white-space: pre-wrap; margin-top: 10px; }
+  
+  .page { 
+    flex: 1; 
+    display: flex; 
+    flex-direction: column; 
+  }
+  
+  #historyList {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 600px; /* จำกัดความสูงของรายการบันทึกเพื่อให้กรอบคงที่ */
+    padding-right: 5px;
+  }
+
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="nav-buttons">
-    <button id="btnCreate" class="active" onclick="switchPage('create')">📝 สร้างประกาศ</button>
-    <button id="btnHistory" onclick="switchPage('history')">📜 บันทึกประกาศ</button>
+<div class="container" id="mainBox">
+  <button id="btnLogout" class="logout-corner hidden" onclick="logout()">LOGOUT</button>
+
+  <div id="sectionAuth">
+    <div class="auth-title">LOGIN</div>
+    <input type="text" id="authUser" class="custom-input" placeholder="ใส่ชื่อของคุณ">
+    <input type="password" id="authPass" class="custom-input" placeholder="ใส่รหัส PIN">
+    <button class="btn-auth" onclick="handleAuth()">เข้าสู่ระบบ</button>
   </div>
 
-  <div id="pageCreate">
-    <h2>สร้างประกาศไฟท์</h2>
+  <div id="sectionApp" class="hidden">
+    <div class="nav-tabs">
+      <button id="tabCreate" class="active" onclick="showPage('create')">📝 สร้างประกาศ</button>
+      <button id="tabHistory" onclick="showPage('history')">📜 บันทึก</button>
+      <button id="tabAdmin" onclick="showPage('admin')">⚙️ จัดการระบบ</button>
+    </div>
 
-    <label for="fighter1">แก๊ง</label>
-    <select id="fighter1">
-     <option value="21ˢᵗ">21ˢᵗ [21ˢᵗ]</option>
-  <option value="28">28GEN [28]</option>
-  <option value="IX95">1995 [IX95]</option>
-      <!-- เรียงตามตัวอักษร A-Z -->
-<option value="A$AP">As Soon As Possible [A$AP]</option>
-<option value="A">ATLAS [A]</option>
-<option value="BAD">BADPORYOUNG [BAD]</option>
-<option value="DHD">Dek Hud Doen (DHD)</option>
-<option value="DBB">Dubaiboy [DBB]</option>
-<option value="FL">Facelift [FL]</option>
-<option value="CON">Iconic [CON]</option>
-<option value="IDGF">IDontgiveafuq [IDGF]</option>
-<option value="JDIF">JUST DO IT NO FAIR (JDIF)</option>
-<option value="LN">LAST NIGHT (LN)</option>
-<option value="LCS">LUCIASTYLE [LCS]</option>
-<option value="NP">Nompong [NP]</option>
-<option value="RRK">R RAI KON (RRK)</option>
-<option value="SHE">Shelikenisaileow [SHE]</option>
-<option value="VRT">VARENTHAS [VRT]</option>
-<option value="YG">Yaoguai [YG]</option>
-</select>
-
-<label for="fighter2">แก๊ง</label>
-<select id="fighter2">
-  <!-- เรียงตามตัวเลขก่อน -->
-  <option value="21ˢᵗ">21ˢᵗ [21ˢᵗ]</option>
-  <option value="28">28GEN [28]</option>
-  <option value="IX95">1995 [IX95]</option>
-
-<!-- เรียงตามตัวอักษร A-Z -->
-<option value="A$AP">As Soon As Possible [A$AP]</option>
-<option value="A">ATLAS [A]</option>
-<option value="BAD">BADPORYOUNG [BAD]</option>
-<option value="DHD">Dek Hud Doen (DHD)</option>
-<option value="DBB">Dubaiboy [DBB]</option>
-<option value="FL">Facelift [FL]</option>
-<option value="CON">Iconic [CON]</option>
-<option value="IDGF">IDontgiveafuq [IDGF]</option>
-<option value="JDIF">JUST DO IT NO FAIR (JDIF)</option>
-<option value="LN">LAST NIGHT (LN)</option>
-<option value="LCS">LUCIASTYLE [LCS]</option>
-<option value="NP">Nompong [NP]</option>
-<option value="RRK">R RAI KON (RRK)</option>
-<option value="SHE">Shelikenisaileow [SHE]</option>
-<option value="VRT">VARENTHAS [VRT]</option>
-<option value="YG">Yaoguai [YG]</option>
-</select>
-  <label>สินเดิมพัน</label>
-<input id="bet" type="text" placeholder="เช่น 1 หรือ 5 + จุ๊บ">
-
-<select id="betUnit">
-<option value="1">หน่วย</option>
+    <div id="pageCreate" class="page">
+      <span class="form-label">แก๊ง 1</span>
+      <select id="f1" class="app-select"></select>
+      <span class="form-label">แก๊ง 2</span>
+      <select id="f2" class="app-select"></select>
+      <span class="form-label">สินเดิมพัน</span>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="bet" class="app-select" style="flex:2" placeholder="เช่น 5">
+        <select id="unit" class="app-select" style="flex:1">
+          <option value="1">หน่วย</option>
 <option value="10">สิบ</option>
 <option value="100">ร้อย</option>
 <option value="1000">พัน</option>
@@ -206,200 +169,289 @@
 <option value="100000">แสน</option>
 <option value="1000000" selected>ล้าน</option>
 </select>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1">
+          <span class="form-label">จำนวนไฟต์</span>
+          <input type="text" id="rnd" class="app-select" value="1">
+        </div>
+        <div style="flex:1">
+          <span class="form-label">คูลดาวน์หมอ</span>
+          <input type="text" id="cd" class="app-select" value="1">
+        </div>
+      </div>
+      <span class="form-label">สถานที่</span>
+      <select id="loc" class="app-select"></select>
+      <button class="btn-gradient" onclick="createMsg()">สร้างข้อความประกาศ</button>
+      <div id="preview-box"></div>
+      <button id="btnCopy" class="btn-gradient" onclick="copyText()">💗 คัดลอกข้อความ</button>
+    </div>
 
-    <label for="rounds">จำนวนไฟต์</label>
-    <input id="rounds" type="text" placeholder="เช่น 1" />
+    <div id="pageHistory" class="page hidden">
+      <div id="historyList"></div>
+    </div>
 
-    <label for="cooldown">คูลดาวน์หมอ</label>
-    <input id="cooldown" type="text" placeholder="เช่น 1" />
+    <div id="pageAdmin" class="page hidden">
+      <div class="admin-menu">
+        <div class="admin-menu-btn active" id="subTabUser" onclick="showSubAdmin('User')">👤 สมาชิก</div>
+        <div class="admin-menu-btn" id="subTabGang" onclick="showSubAdmin('Gang')">🏠 แก๊ง</div>
+        <div class="admin-menu-btn" id="subTabLoc" onclick="showSubAdmin('Loc')">📍 สถานที่</div>
+      </div>
 
-    <label for="location">สถานที่</label>
-    <select id="location">
-    <option>เขาอำนวย</option>
-<option>เขาอำนวยบริเวณลานจอดรถถึงสนามหญ้า ห้ามออกนอกนั้น</option>
-<option>ค่ายทหาร</option>
-<option>โกดังสนามบินล่าง</option>
-<option>โรงงานไก่</option>
-<option>โรงบาลเก่า</option>
-<option>เวที</option>
-<option>เวที่โรงบาลเก่า</option>
-<option>สนามบินค่ายทหาร</option>
-<option>สนามบินล่าง</option>
-<option>สนามบินล่าง ตรงรันเวย์ เลยโกดังมาหน่อย</option>
-<option>สนามบินล่างหน้าโกดัง</option>
-<option>สนามบินล่างเสาไกล</option>
-<option>สนามบินล่างริมทะเล</option>
-<option>สนามบินทะเลทราย</option>
-<option>เสาเเดงชิงบ้าน</option>
-<option>ปั้มเมืองบน</option>
-<option>โฮมโปรทะเลทราย</option>
-<option>หอดูดาว</option>
-<option>แลป</option>
-<option>ท่าเรือ</option>
-<option>ท่าเรือ เรเบลล่าง</option>
-    </select>
+      <div id="subPageUser" class="admin-card sub-page">
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>NAME</th><th>ROLES (เลือกได้หลายยศ)</th><th>ACTION</th></tr></thead>
+            <tbody id="userTableBody"></tbody>
+          </table>
+        </div>
+      </div>
 
-    <label for="startTime">เวลาเริ่ม</label>
-    <input id="startTime" type="text" placeholder="เช่น 1920 หรือ 19 20" />
+      <div id="subPageGang" class="admin-card sub-page hidden">
+        <div class="admin-input-group">
+          <input type="text" id="newGangName" class="admin-input-small" placeholder="ชื่อแก๊งใหม่...">
+          <button class="btn-add" onclick="addItem('gang')">เพิ่ม</button>
+        </div>
+        <div id="gangTags" class="tag-container"></div>
+      </div>
 
-    <label for="extra">เพิ่มเติม</label>
-    <textarea id="extra" placeholder="เช่น ไม่อยากให้มีผู้ชม"></textarea>
-
-    <button onclick="createAnnouncement()">สร้างข้อความประกาศ</button>
-    <div id="preview"></div>
-    <button id="copyBtn" onclick="copyToClipboard()">💗 คัดลอกข้อความ</button>
-  </div>
-
-  <div id="pageHistory" style="display:none;">
-    <h2>บันทึกประกาศ</h2>
-    <div id="historyList"></div>
+      <div id="subPageLoc" class="admin-card sub-page hidden">
+        <div class="admin-input-group">
+          <input type="text" id="newLocName" class="admin-input-small" placeholder="ชื่อสถานที่ใหม่...">
+          <button class="btn-add" onclick="addItem('loc')">เพิ่ม</button>
+        </div>
+        <div id="locTags" class="tag-container"></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-let currentAnnouncement = "";
+<script type="module">
+  // --- 🔥 Firebase Initialization ---
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-function switchPage(page) {
-  const btnCreate = document.getElementById('btnCreate');
-  const btnHistory = document.getElementById('btnHistory');
-  const pageCreate = document.getElementById('pageCreate');
-  const pageHistory = document.getElementById('pageHistory');
+  const firebaseConfig = {
+    apiKey: "AIzaSyBAEPuJxADueJko9C9LN9OUoVkPI3WNaMo",
+    authDomain: "tsts-4888b.firebaseapp.com",
+    databaseURL: "https://tsts-4888b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "tsts-4888b",
+    storageBucket: "tsts-4888b.firebasestorage.app",
+    messagingSenderId: "123650706135",
+    appId: "1:123650706135:web:d1925f41c3a38a8232be92",
+    measurementId: "G-71JEJMJ2MR"
+  };
 
-  if(page === 'create') {
-    btnCreate.classList.add('active');
-    btnHistory.classList.remove('active');
-    pageCreate.style.display = 'block';
-    pageHistory.style.display = 'none';
-  } else {
-    btnHistory.classList.add('active');
-    btnCreate.classList.remove('active');
-    pageHistory.style.display = 'block';
-    pageCreate.style.display = 'none';
-    loadHistory();
-  }
-}
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-function createAnnouncement() {
-  const f1 = document.getElementById('fighter1').selectedOptions[0].text.trim();
-  const f2 = document.getElementById('fighter2').selectedOptions[0].text.trim();
+  // --- Variables ---
+  let users = {};
+  let gangs = [];
+  let locs = [];
+  let historyData = [];
+  let currentUser = null;
 
-  let betInput = document.getElementById('bet').value.trim() || "1";
-  let unit = parseFloat(document.getElementById('betUnit').value);
+  const ALL_ROLES = [
+    {id: 'owner', label: 'Owner'},
+    {id: 'admin', label: 'แอดมิน'},
+    {id: 'manager', label: 'ผู้จัดการ'},
+    {id: 'editor', label: 'เขียนข่าว'},
+    {id: 'guest', label: 'ทั่วไป'}
+  ];
 
-  let suffix = "";
-  if (unit == 1000000) suffix = " M";
-  else if (unit == 100000) suffix = " K";
-
-  let bet = "";
-
-  if (betInput.includes("+")) {
-    let parts = betInput.split("+");
-    let numberPart = parts[0].trim();
-    let textPart = parts.slice(1).join("+").trim();
-
-    let num = parseFloat(numberPart.replace(/,/g, ""));
-
-    if (!isNaN(num)) {
-      let result = num * unit;
-      bet = result.toLocaleString() + suffix + " + " + textPart;
-    } else {
-      bet = betInput;
+  // --- Realtime Sync ---
+  onValue(ref(db, 'users'), (snapshot) => {
+    users = snapshot.val() || {};
+    const hasJaokha = Object.values(users).some(u => u.user === 'Jaokha');
+    if(!hasJaokha) {
+        push(ref(db, 'users'), {user: 'Jaokha', pass: '9988', roles: ['owner']});
     }
-
-  } else {
-    let num = parseFloat(betInput.replace(/,/g, ""));
-
-    if (!isNaN(num)) {
-      let result = num * unit;
-      bet = result.toLocaleString() + suffix;
-    } else {
-      bet = betInput;
-    }
-  }
-
-  let rounds = document.getElementById('rounds').value.trim() || "1";
-  if (!rounds.includes("ไฟต์")) rounds += " ไฟต์";
-
-  let cooldown = document.getElementById('cooldown').value.trim() || "1";
-  if (!cooldown.includes("นาที")) cooldown += " นาที";
-
-  let startTimeInput = document.getElementById('startTime').value.trim() || "21:30";
-  let startTime = startTimeInput.replace(/\s+/g,"").replace(/(\d{2})(\d{2})/,"$1:$2");
-  if (!startTime.includes("นาที")) startTime += " นาที";
-
-  const location = document.getElementById('location').value.trim() || "สนามกีฬา";
-  const extra = document.getElementById('extra').value.trim() || "-";
-
-  const tags = "<@651025174338076683> <@537589376096665601>";
-
-  currentAnnouncement =
-`${f1} Vs ${f2}
-สินเดิมพัน : ${bet}
-จำนวนไฟต์ : ${rounds}
-คูลดาวน์ : ${cooldown}
-สถานที่ : ${location}
-เวลาเริ่ม : ${startTime}
-เพิ่มเติม : ${extra}
-${tags}`;
-
-  document.getElementById('preview').textContent = currentAnnouncement;
-
-  const btn = document.getElementById('copyBtn');
-  btn.textContent = "💗 คัดลอกข้อความ";
-  btn.classList.remove('success');
-
-  saveToHistory(currentAnnouncement);
-}
-
-function copyToClipboard() {
-  if (!currentAnnouncement) return;
-  navigator.clipboard.writeText(currentAnnouncement).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = "✅ คัดลอกแล้ว";
-    btn.classList.add('success');
-    setTimeout(()=>{ btn.textContent = "💗 คัดลอกข้อความ"; btn.classList.remove('success'); },2000);
-  }).catch(err => alert("ไม่สามารถคัดลอกข้อความได้: " + err));
-}
-
-function saveToHistory(text) {
-  let history = JSON.parse(localStorage.getItem('fightHistory')) || [];
-  const now = new Date();
-  history.unshift({id: now.getTime(), time: now.toLocaleString(), text});
-  localStorage.setItem('fightHistory', JSON.stringify(history));
-}
-
-function loadHistory() {
-  const container = document.getElementById('historyList');
-  container.innerHTML = '';
-  const history = JSON.parse(localStorage.getItem('fightHistory')) || [];
-  history.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'history-card';
-    const timestamp = document.createElement('div');
-    timestamp.className = 'timestamp';
-    timestamp.textContent = item.time;
-    card.appendChild(timestamp);
-    const pre = document.createElement('pre');
-    pre.textContent = item.text;
-    card.appendChild(pre);
-    const delBtn = document.createElement('button');
-    delBtn.className = 'deleteBtn';
-    delBtn.textContent = 'ลบ';
-    delBtn.onclick = () => deleteHistory(item.id);
-    card.appendChild(delBtn);
-    container.appendChild(card);
+    renderAdmin();
   });
-}
 
-function deleteHistory(id) {
-  let history = JSON.parse(localStorage.getItem('fightHistory')) || [];
-  history = history.filter(item => item.id !== id);
-  localStorage.setItem('fightHistory', JSON.stringify(history));
-  loadHistory();
-}
+  onValue(ref(db, 'gangs'), (snapshot) => {
+    gangs = snapshot.val() || ["21ˢᵗ [21ˢᵗ]", "28GEN [28]", "1995 [IX95]"];
+    renderOptions();
+    renderAdmin();
+  });
 
-window.onload = () => loadHistory();
+  onValue(ref(db, 'locs'), (snapshot) => {
+    locs = snapshot.val() || ["เขาอำนวย", "ค่ายทหาร", "สนามบินล่าง"];
+    renderOptions();
+    renderAdmin();
+  });
+
+  onValue(ref(db, 'history'), (snapshot) => {
+    const data = snapshot.val() || {};
+    historyData = Object.keys(data).map(key => ({id: key, ...data[key]})).reverse();
+    renderHistory();
+  });
+
+  // --- Functions (Expose to window) ---
+  window.handleAuth = function() {
+    const u = document.getElementById('authUser').value.trim();
+    const p = document.getElementById('authPass').value.trim();
+    const foundKey = Object.keys(users).find(key => users[key].user === u && users[key].pass === p);
+    
+    if(foundKey) { 
+      currentUser = users[foundKey]; 
+      sessionStorage.setItem('logged_user', JSON.stringify(currentUser)); 
+      startApp(); 
+    } else { 
+      alert("ชื่อหรือ PIN ไม่ถูกต้อง"); 
+    }
+  };
+
+  function startApp() {
+    document.getElementById('sectionAuth').classList.add('hidden');
+    document.getElementById('sectionApp').classList.remove('hidden');
+    document.getElementById('btnLogout').classList.remove('hidden');
+    document.getElementById('mainBox').classList.add('app-mode');
+    renderOptions();
+    showPage('create');
+  }
+
+  window.showPage = function(p) {
+    document.querySelectorAll('.page').forEach(pg => pg.classList.add('hidden'));
+    document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+    document.getElementById('page' + p.charAt(0).toUpperCase() + p.slice(1)).classList.remove('hidden');
+    document.getElementById('tab' + p.charAt(0).toUpperCase() + p.slice(1)).classList.add('active');
+    if(p === 'admin') showSubAdmin('User');
+  };
+
+  window.showSubAdmin = function(sub) {
+    document.querySelectorAll('.sub-page').forEach(sp => sp.classList.add('hidden'));
+    document.querySelectorAll('.admin-menu-btn').forEach(sm => sm.classList.remove('active'));
+    document.getElementById('subPage' + sub).classList.remove('hidden');
+    document.getElementById('subTab' + sub).classList.add('active');
+    renderAdmin();
+  };
+
+  function renderOptions() {
+    const gHtml = gangs.map(g => `<option value="${g}">${g}</option>`).join('');
+    document.getElementById('f1').innerHTML = gHtml; document.getElementById('f2').innerHTML = gHtml;
+    document.getElementById('loc').innerHTML = locs.map(l => `<option value="${l}">${l}</option>`).join('');
+  }
+
+  window.addItem = function(type) {
+    const input = document.getElementById(type === 'gang' ? 'newGangName' : 'newLocName');
+    const val = input.value.trim();
+    if(!val) return;
+    if(type === 'gang') { 
+      const newGangs = [...gangs, val];
+      set(ref(db, 'gangs'), newGangs);
+    } else { 
+      const newLocs = [...locs, val];
+      set(ref(db, 'locs'), newLocs);
+    }
+    input.value = '';
+  };
+
+  window.removeItem = function(type, index) {
+    if(type === 'gang') { 
+      gangs.splice(index, 1); 
+      set(ref(db, 'gangs'), gangs);
+    } else { 
+      locs.splice(index, 1); 
+      set(ref(db, 'locs'), locs);
+    }
+  };
+
+  function renderAdmin() {
+    document.getElementById('gangTags').innerHTML = gangs.map((g, i) => `<div class="tag">${g}<span onclick="removeItem('gang', ${i})">×</span></div>`).join('');
+    document.getElementById('locTags').innerHTML = locs.map((l, i) => `<div class="tag">${l}<span onclick="removeItem('loc', ${i})">×</span></div>`).join('');
+    
+    const body = document.getElementById('userTableBody'); 
+    body.innerHTML = '';
+    
+    Object.keys(users).forEach((key) => {
+      const u = users[key];
+      if (u.user === 'Jaokha') return;
+
+      const tr = document.createElement('tr');
+      let rolesHtml = `<div class="role-checkbox-group">`;
+      ALL_ROLES.forEach(roleDef => {
+        const checked = u.roles && u.roles.includes(roleDef.id) ? 'checked' : '';
+        const isDisabled = (roleDef.id === 'owner') ? 'disabled' : '';
+        rolesHtml += `<label class="role-item ${isDisabled}"><input type="checkbox" ${checked} ${isDisabled} onchange="updateMultiRole('${key}', '${roleDef.id}', this.checked)"> ${roleDef.label}</label>`;
+      });
+      rolesHtml += `</div>`;
+      tr.innerHTML = `<td><strong>${u.user}</strong></td><td>${rolesHtml}</td><td><button class="btn-delete" onclick="delUser('${key}')">ลบ</button></td>`;
+      body.appendChild(tr);
+    });
+  }
+
+  window.updateMultiRole = function(userKey, roleId, checked) {
+    let userRoles = users[userKey].roles || [];
+    if(checked) { 
+      if(!userRoles.includes(roleId)) userRoles.push(roleId); 
+    } else { 
+      userRoles = userRoles.filter(r => r !== roleId); 
+    }
+    if(userRoles.length === 0) userRoles = ['guest'];
+    set(ref(db, `users/${userKey}/roles`), userRoles);
+  };
+
+  window.delUser = function(key) { 
+    if(confirm("ลบสมาชิกนี้?")) { remove(ref(db, `users/${key}`)); } 
+  };
+
+  window.logout = function() { sessionStorage.removeItem('logged_user'); location.reload(); };
+
+  window.createMsg = function() {
+    const bet = document.getElementById('bet').value;
+    const unit = document.getElementById('unit').value == 1000000 ? 'M' : '';
+    const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nเดิมพัน: ${bet}${unit}\nจำนวน: ${document.getElementById('rnd').value} ไฟต์ | คูลดาวน์: ${document.getElementById('cd').value}\nสถานที่: ${document.getElementById('loc').value}\n<@651025174338076683> <@537589376096665601>`;
+    document.getElementById('preview-box').innerText = msg;
+    
+    const now = new Date();
+    const timeStr = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    
+    push(ref(db, 'history'), {
+      text: msg,
+      author: currentUser.user,
+      time: timeStr
+    });
+  };
+
+  window.copyText = function() { 
+    const previewText = document.getElementById('preview-box').innerText;
+    if(!previewText) return;
+
+    navigator.clipboard.writeText(previewText).then(() => {
+      const btn = document.getElementById('btnCopy');
+      btn.classList.add('btn-copy-success');
+      btn.innerText = "✅ คัดลอกสำเร็จ!";
+      
+      setTimeout(() => {
+        btn.classList.remove('btn-copy-success');
+        btn.innerText = "💗 คัดลอกข้อความ";
+      }, 2000);
+    }); 
+  };
+
+  function renderHistory() {
+    const list = document.getElementById('historyList'); list.innerHTML = '';
+    historyData.forEach(item => {
+      const card = document.createElement('div');
+      card.style = "background:#f8faff; padding:15px; border-radius:15px; margin-bottom:10px; text-align:left; border-left:5px solid #5391e5; position:relative;";
+      card.innerHTML = `<div style="margin-bottom:8px;"><strong style="color:var(--primary-blue); font-size:14px;">📢 ประกาศโดย: ${item.author}</strong> <br><small style="color:#999;">เมื่อ: ${item.time || 'ไม่ระบุเวลา'}</small></div>
+                        <div style="font-size:14px; color:#444; white-space:pre-wrap;">${item.text}</div>
+                        <button class="btn-delete" style="position:absolute; right:10px; top:10px;" onclick="delHistory('${item.id}')">ลบ</button>`;
+      list.appendChild(card);
+    });
+  }
+
+  window.delHistory = function(id) {
+    if(confirm("ลบประวัตินี้?")) { remove(ref(db, `history/${id}`)); }
+  };
+
+  const savedUser = sessionStorage.getItem('logged_user');
+  if(savedUser) { 
+    currentUser = JSON.parse(savedUser); 
+    setTimeout(startApp, 500);
+  }
 </script>
-
 </body>
 </html>
