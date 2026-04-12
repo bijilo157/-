@@ -50,72 +50,24 @@
     font-weight: 600; font-size: 11px; cursor: pointer; z-index: 10;
   }
 
-  /* ปรับแต่งหน้า Login ตามรูป */
-  .auth-title { 
-    color: var(--text-muted); 
-    font-size: 14px; 
-    letter-spacing: 4px; 
-    font-weight: 700; 
-    margin-bottom: 50px; 
-    text-transform: uppercase; 
-  }
+  .auth-title { color: var(--text-muted); font-size: 14px; letter-spacing: 2px; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; }
 
   .custom-input {
-    width: 100%; 
-    background: #fcfcfc; 
-    border: 1px solid #eee;
-    border-radius: 20px; 
-    padding: 22px; 
-    font-size: 16px; 
-    text-align: center;
-    box-sizing: border-box; 
-    outline: none; 
-    margin-bottom: 20px; 
-    font-family: 'Kanit'; 
-    color: #555;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    width: 100%; background: var(--input-bg); border: 1.5px solid #eee;
+    border-radius: 25px; padding: 18px; font-size: 16px; text-align: center;
+    box-sizing: border-box; outline: none; margin-bottom: 15px; font-family: 'Kanit'; color: #555;
   }
 
   .btn-auth {
-    background: var(--primary-blue); 
-    color: white; 
-    border: none; 
-    border-radius: 20px;
-    padding: 20px 0; 
-    width: 100%; 
-    font-size: 20px; 
-    font-weight: 700;
-    cursor: pointer; 
-    margin-top: 10px; 
-    box-shadow: 0 10px 20px rgba(83, 145, 229, 0.4);
-    transition: 0.3s;
+    background: var(--primary-blue); color: white; border: none; border-radius: 25px;
+    padding: 16px 0; width: 100%; font-size: 18px; font-weight: 700;
+    cursor: pointer; margin-top: 15px; box-shadow: 0 8px 20px rgba(83, 145, 229, 0.3);
   }
 
-  /* ส่วนลิงก์ด้านล่างปุ่ม Login */
-  .auth-footer-links {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 35px;
-    font-size: 13px;
-    color: var(--text-muted);
+  .auth-switch {
+    margin-top: 20px; color: var(--primary-blue); font-size: 13px; cursor: pointer; text-decoration: underline;
   }
 
-  .auth-footer-links span {
-    cursor: pointer;
-    transition: 0.2s;
-  }
-
-  .auth-footer-links span:hover { color: var(--primary-blue); }
-
-  .close-window-text {
-    margin-top: 25px;
-    font-size: 12px;
-    color: #ccc;
-    cursor: pointer;
-  }
-
-  /* CSS เดิมทั้งหมด */
   .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
   .nav-tabs button {
     background: #e6eaff; border: none; padding: 10px 22px; border-radius: 15px;
@@ -180,16 +132,11 @@
   <button id="btnLogout" class="logout-corner hidden" onclick="logout()">LOGOUT</button>
 
   <div id="sectionAuth">
-    <div class="auth-title">LOGIN</div>
+    <div id="authHeader" class="auth-title">LOGIN</div>
     <input type="text" id="authUser" class="custom-input" placeholder="ใส่ชื่อของคุณ">
     <input type="password" id="authPass" class="custom-input" placeholder="ใส่รหัส PIN">
-    <button class="btn-auth" onclick="handleAuth()">เข้าสู่ระบบ</button>
-    
-    <div class="auth-footer-links">
-      <span onclick="alert('กรุณาติดต่อแอดมินเพื่อลงทะเบียน')">ลงทะเบียนสมาชิก</span>
-      <span onclick="alert('กรุณาเข้าสู่ระบบก่อนเพื่อเปลี่ยน PIN')">เปลี่ยนรหัส PIN</span>
-    </div>
-    <div class="close-window-text">ปิดหน้าต่าง</div>
+    <button id="btnAuthMain" class="btn-auth" onclick="handleAuth()">เข้าสู่ระบบ</button>
+    <div id="switchMode" class="auth-switch" onclick="toggleAuthMode()">ยังไม่มีบัญชี? ลงทะเบียนที่นี่</div>
   </div>
 
   <div id="sectionApp" class="hidden">
@@ -243,12 +190,13 @@
         <div class="admin-menu-btn active" id="subTabUser" onclick="showSubAdmin('User')">👤 สมาชิก</div>
         <div class="admin-menu-btn" id="subTabGang" onclick="showSubAdmin('Gang')">🏠 แก๊ง</div>
         <div class="admin-menu-btn" id="subTabLoc" onclick="showSubAdmin('Loc')">📍 สถานที่</div>
+        <div class="admin-menu-btn" id="subTabPass" onclick="showSubAdmin('Pass')">🔑 เปลี่ยนรหัส</div>
       </div>
 
       <div id="subPageUser" class="admin-card sub-page">
         <div style="overflow-x:auto;">
           <table>
-            <thead><tr><th>NAME</th><th>ROLES (เลือกได้หลายยศ)</th><th>ACTION</th></tr></thead>
+            <thead><tr><th>NAME</th><th>ROLES</th><th>ACTION</th></tr></thead>
             <tbody id="userTableBody"></tbody>
           </table>
         </div>
@@ -269,13 +217,19 @@
         </div>
         <div id="locTags" class="tag-container"></div>
       </div>
+
+      <div id="subPagePass" class="admin-card sub-page hidden">
+        <span class="form-label">รหัส PIN ใหม่</span>
+        <input type="password" id="newPin" class="custom-input" placeholder="ใส่ PIN 4-6 หลัก">
+        <button class="btn-auth" onclick="changeMyPin()">อัปเดตรหัสผ่าน</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBAEPuJxADueJko9C9LN9OUoVkPI3WNaMo",
@@ -296,6 +250,8 @@
   let locs = [];
   let historyData = [];
   let currentUser = null;
+  let currentUserID = null;
+  let isLoginMode = true;
 
   const ALL_ROLES = [
     {id: 'owner', label: 'Owner'},
@@ -308,9 +264,7 @@
   onValue(ref(db, 'users'), (snapshot) => {
     users = snapshot.val() || {};
     const hasJaokha = Object.values(users).some(u => u.user === 'Jaokha');
-    if(!hasJaokha) {
-        push(ref(db, 'users'), {user: 'Jaokha', pass: '9988', roles: ['owner']});
-    }
+    if(!hasJaokha) { set(ref(db, 'users/master'), {user: 'Jaokha', pass: '9988', roles: ['owner']}); }
     renderAdmin();
   });
 
@@ -332,18 +286,46 @@
     renderHistory();
   });
 
+  window.toggleAuthMode = function() {
+    isLoginMode = !isLoginMode;
+    document.getElementById('authHeader').innerText = isLoginMode ? 'LOGIN' : 'REGISTER';
+    document.getElementById('btnAuthMain').innerText = isLoginMode ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+    document.getElementById('switchMode').innerText = isLoginMode ? 'ยังไม่มีบัญชี? ลงทะเบียนที่นี่' : 'มีบัญชีแล้ว? เข้าสู่ระบบ';
+  };
+
   window.handleAuth = function() {
     const u = document.getElementById('authUser').value.trim();
     const p = document.getElementById('authPass').value.trim();
-    const foundKey = Object.keys(users).find(key => users[key].user === u && users[key].pass === p);
-    
-    if(foundKey) { 
-      currentUser = users[foundKey]; 
-      sessionStorage.setItem('logged_user', JSON.stringify(currentUser)); 
-      startApp(); 
-    } else { 
-      alert("ชื่อหรือ PIN ไม่ถูกต้อง"); 
+    if(!u || !p) return alert("กรุณากรอกข้อมูลให้ครบ");
+
+    const userEntry = Object.entries(users).find(([id, data]) => data.user === u);
+
+    if(isLoginMode) {
+      if(userEntry && userEntry[1].pass === p) {
+        currentUserID = userEntry[0];
+        currentUser = userEntry[1];
+        sessionStorage.setItem('logged_user_id', currentUserID);
+        startApp();
+      } else { alert("ชื่อหรือ PIN ไม่ถูกต้อง"); }
+    } else {
+      if(userEntry) return alert("ชื่อนี้ถูกใช้ไปแล้ว");
+      const newUserRef = push(ref(db, 'users'));
+      const newData = { user: u, pass: p, roles: ['guest'] };
+      set(newUserRef, newData).then(() => {
+        alert("ลงทะเบียนสำเร็จ! กรุณาเข้าสู่ระบบ");
+        isLoginMode = true;
+        toggleAuthMode();
+      });
     }
+  };
+
+  window.changeMyPin = function() {
+    const newPin = document.getElementById('newPin').value.trim();
+    if(newPin.length < 4) return alert("PIN ต้องมีอย่างน้อย 4 ตัว");
+    update(ref(db, `users/${currentUserID}`), { pass: newPin }).then(() => {
+      alert("เปลี่ยนรหัสผ่านสำเร็จ!");
+      document.getElementById('newPin').value = '';
+    });
   };
 
   function startApp() {
@@ -354,6 +336,8 @@
     renderOptions();
     showPage('create');
   }
+
+  window.logout = function() { sessionStorage.clear(); location.reload(); };
 
   window.showPage = function(p) {
     document.querySelectorAll('.page').forEach(pg => pg.classList.add('hidden'));
@@ -373,45 +357,42 @@
 
   function renderOptions() {
     const gHtml = gangs.map(g => `<option value="${g}">${g}</option>`).join('');
-    document.getElementById('f1').innerHTML = gHtml; document.getElementById('f2').innerHTML = gHtml;
-    document.getElementById('loc').innerHTML = locs.map(l => `<option value="${l}">${l}</option>`).join('');
+    const f1 = document.getElementById('f1');
+    const f2 = document.getElementById('f2');
+    const lc = document.getElementById('loc');
+    if(f1) f1.innerHTML = gHtml; 
+    if(f2) f2.innerHTML = gHtml;
+    if(lc) lc.innerHTML = locs.map(l => `<option value="${l}">${l}</option>`).join('');
   }
 
   window.addItem = function(type) {
     const input = document.getElementById(type === 'gang' ? 'newGangName' : 'newLocName');
     const val = input.value.trim();
     if(!val) return;
-    if(type === 'gang') { 
-      const newGangs = [...gangs, val];
-      set(ref(db, 'gangs'), newGangs);
-    } else { 
-      const newLocs = [...locs, val];
-      set(ref(db, 'locs'), newLocs);
-    }
+    const targetRef = ref(db, type === 'gang' ? 'gangs' : 'locs');
+    const newData = type === 'gang' ? [...gangs, val] : [...locs, val];
+    set(targetRef, newData);
     input.value = '';
   };
 
   window.removeItem = function(type, index) {
-    if(type === 'gang') { 
-      gangs.splice(index, 1); 
-      set(ref(db, 'gangs'), gangs);
-    } else { 
-      locs.splice(index, 1); 
-      set(ref(db, 'locs'), locs);
-    }
+    const targetRef = ref(db, type === 'gang' ? 'gangs' : 'locs');
+    const data = type === 'gang' ? [...gangs] : [...locs];
+    data.splice(index, 1);
+    set(targetRef, data);
   };
 
   function renderAdmin() {
-    document.getElementById('gangTags').innerHTML = gangs.map((g, i) => `<div class="tag">${g}<span onclick="removeItem('gang', ${i})">×</span></div>`).join('');
-    document.getElementById('locTags').innerHTML = locs.map((l, i) => `<div class="tag">${l}<span onclick="removeItem('loc', ${i})">×</span></div>`).join('');
+    const gangTags = document.getElementById('gangTags');
+    const locTags = document.getElementById('locTags');
+    if(gangTags) gangTags.innerHTML = gangs.map((g, i) => `<div class="tag">${g}<span onclick="removeItem('gang', ${i})">×</span></div>`).join('');
+    if(locTags) locTags.innerHTML = locs.map((l, i) => `<div class="tag">${l}<span onclick="removeItem('loc', ${i})">×</span></div>`).join('');
     
     const body = document.getElementById('userTableBody'); 
+    if(!body) return;
     body.innerHTML = '';
-    
-    Object.keys(users).forEach((key) => {
-      const u = users[key];
+    Object.entries(users).forEach(([key, u]) => {
       if (u.user === 'Jaokha') return;
-
       const tr = document.createElement('tr');
       let rolesHtml = `<div class="role-checkbox-group">`;
       ALL_ROLES.forEach(roleDef => {
@@ -427,28 +408,26 @@
 
   window.updateMultiRole = function(userKey, roleId, checked) {
     let userRoles = users[userKey].roles || [];
-    if(checked) { 
-      if(!userRoles.includes(roleId)) userRoles.push(roleId); 
-    } else { 
-      userRoles = userRoles.filter(r => r !== roleId); 
-    }
+    if(checked) { if(!userRoles.includes(roleId)) userRoles.push(roleId); }
+    else { userRoles = userRoles.filter(r => r !== roleId); }
     if(userRoles.length === 0) userRoles = ['guest'];
-    set(ref(db, `users/${userKey}/roles`), userRoles);
+    update(ref(db, `users/${userKey}`), { roles: userRoles });
   };
 
-  window.delUser = function(key) { 
-    if(confirm("ลบสมาชิกนี้?")) { remove(ref(db, `users/${key}`)); } 
-  };
-
-  window.logout = function() { sessionStorage.removeItem('logged_user'); location.reload(); };
+  window.delUser = function(key) { if(confirm("ลบสมาชิกนี้?")) { remove(ref(db, `users/${key}`)); } };
 
   window.createMsg = function() {
     const bet = document.getElementById('bet').value;
-    const unit = document.getElementById('unit').value == 1000000 ? 'M' : '';
-    const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nเดิมพัน: ${bet}${unit}\nจำนวน: ${document.getElementById('rnd').value} ไฟต์ | คูลดาวน์: ${document.getElementById('cd').value}\nสถานที่: ${document.getElementById('loc').value}\n<@651025174338076683> <@537589376096665601>`;
+    const unitVal = document.getElementById('unit').value;
+    let unitLabel = "";
+    if(unitVal == 1000000) unitLabel = "M";
+    else if(unitVal == 100000) unitLabel = " แสน";
+    else if(unitVal == 10000) unitLabel = " หมื่น";
+    
+    const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nเดิมพัน: ${bet}${unitLabel}\nจำนวน: ${document.getElementById('rnd').value} ไฟต์ | คูลดาวน์: ${document.getElementById('cd').value}\nสถานที่: ${document.getElementById('loc').value}\n<@651025174338076683> <@537589376096665601>`;
     document.getElementById('preview-box').innerText = msg;
     const now = new Date();
-    const timeStr = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const timeStr = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH');
     push(ref(db, 'history'), { text: msg, author: currentUser.user, time: timeStr });
   };
 
@@ -464,25 +443,30 @@
   };
 
   function renderHistory() {
-    const list = document.getElementById('historyList'); list.innerHTML = '';
+    const list = document.getElementById('historyList'); 
+    if(!list) return;
+    list.innerHTML = '';
     historyData.forEach(item => {
       const card = document.createElement('div');
       card.style = "background:#f8faff; padding:15px; border-radius:15px; margin-bottom:10px; text-align:left; border-left:5px solid #5391e5; position:relative;";
-      card.innerHTML = `<div style="margin-bottom:8px;"><strong style="color:var(--primary-blue); font-size:14px;">📢 ประกาศโดย: ${item.author}</strong> <br><small style="color:#999;">เมื่อ: ${item.time || 'ไม่ระบุเวลา'}</small></div>
+      card.innerHTML = `<div style="margin-bottom:8px;"><strong style="color:var(--primary-blue); font-size:14px;">📢 ประกาศโดย: ${item.author}</strong> <br><small style="color:#999;">เมื่อ: ${item.time}</small></div>
                         <div style="font-size:14px; color:#444; white-space:pre-wrap;">${item.text}</div>
                         <button class="btn-delete" style="position:absolute; right:10px; top:10px;" onclick="delHistory('${item.id}')">ลบ</button>`;
       list.appendChild(card);
     });
   }
 
-  window.delHistory = function(id) {
-    if(confirm("ลบประวัตินี้?")) { remove(ref(db, `history/${id}`)); }
-  };
+  window.delHistory = function(id) { if(confirm("ลบประวัตินี้?")) { remove(ref(db, `history/${id}`)); } };
 
-  const savedUser = sessionStorage.getItem('logged_user');
-  if(savedUser) { 
-    currentUser = JSON.parse(savedUser); 
-    setTimeout(startApp, 500);
+  const savedID = sessionStorage.getItem('logged_user_id');
+  if(savedID) {
+    onValue(ref(db, `users/${savedID}`), (snap) => {
+      if(snap.exists()) {
+        currentUserID = savedID;
+        currentUser = snap.val();
+        startApp();
+      }
+    }, { onlyOnce: true });
   }
 </script>
 </body>
