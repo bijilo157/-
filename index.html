@@ -40,7 +40,7 @@
 
   .container.app-mode { 
     max-width: 750px; 
-    min-height: 850px; /* กำหนดความสูงขั้นต่ำให้คงที่ทุกหน้า */
+    min-height: 850px; 
   }
 
   .logout-corner {
@@ -50,20 +50,72 @@
     font-weight: 600; font-size: 11px; cursor: pointer; z-index: 10;
   }
 
-  .auth-title { color: var(--text-muted); font-size: 14px; letter-spacing: 2px; font-weight: 700; margin-bottom: 40px; text-transform: uppercase; }
+  /* ปรับแต่งหน้า Login ตามรูป */
+  .auth-title { 
+    color: var(--text-muted); 
+    font-size: 14px; 
+    letter-spacing: 4px; 
+    font-weight: 700; 
+    margin-bottom: 50px; 
+    text-transform: uppercase; 
+  }
 
   .custom-input {
-    width: 100%; background: var(--input-bg); border: 1.5px solid #eee;
-    border-radius: 25px; padding: 18px; font-size: 16px; text-align: center;
-    box-sizing: border-box; outline: none; margin-bottom: 15px; font-family: 'Kanit'; color: #555;
+    width: 100%; 
+    background: #fcfcfc; 
+    border: 1px solid #eee;
+    border-radius: 20px; 
+    padding: 22px; 
+    font-size: 16px; 
+    text-align: center;
+    box-sizing: border-box; 
+    outline: none; 
+    margin-bottom: 20px; 
+    font-family: 'Kanit'; 
+    color: #555;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
   }
 
   .btn-auth {
-    background: var(--primary-blue); color: white; border: none; border-radius: 25px;
-    padding: 16px 0; width: 100%; font-size: 18px; font-weight: 700;
-    cursor: pointer; margin-top: 15px; box-shadow: 0 8px 20px rgba(83, 145, 229, 0.3);
+    background: var(--primary-blue); 
+    color: white; 
+    border: none; 
+    border-radius: 20px;
+    padding: 20px 0; 
+    width: 100%; 
+    font-size: 20px; 
+    font-weight: 700;
+    cursor: pointer; 
+    margin-top: 10px; 
+    box-shadow: 0 10px 20px rgba(83, 145, 229, 0.4);
+    transition: 0.3s;
   }
 
+  /* ส่วนลิงก์ด้านล่างปุ่ม Login */
+  .auth-footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 35px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .auth-footer-links span {
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .auth-footer-links span:hover { color: var(--primary-blue); }
+
+  .close-window-text {
+    margin-top: 25px;
+    font-size: 12px;
+    color: #ccc;
+    cursor: pointer;
+  }
+
+  /* CSS เดิมทั้งหมด */
   .nav-tabs { display: flex; gap: 10px; margin-bottom: 30px; justify-content: center; flex-wrap: wrap; }
   .nav-tabs button {
     background: #e6eaff; border: none; padding: 10px 22px; border-radius: 15px;
@@ -82,7 +134,7 @@
   .admin-card {
     background: #ffffff; border-radius: 25px; padding: 25px;
     border: 1px solid #f0f4f8; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.02);
-    min-height: 400px; /* เพิ่มความสูงขั้นต่ำให้การ์ดในหน้าแอดมิน */
+    min-height: 400px;
   }
   
   .admin-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -117,19 +169,8 @@
   .btn-copy-success { background: #48bb78 !important; }
   #preview-box { background: #f0f4ff; border-radius: 20px; padding: 20px; min-height: 100px; text-align: left; font-size: 14px; white-space: pre-wrap; margin-top: 10px; }
   
-  .page { 
-    flex: 1; 
-    display: flex; 
-    flex-direction: column; 
-  }
-  
-  #historyList {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 600px; /* จำกัดความสูงของรายการบันทึกเพื่อให้กรอบคงที่ */
-    padding-right: 5px;
-  }
-
+  .page { flex: 1; display: flex; flex-direction: column; }
+  #historyList { flex: 1; overflow-y: auto; max-height: 600px; padding-right: 5px; }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -143,6 +184,12 @@
     <input type="text" id="authUser" class="custom-input" placeholder="ใส่ชื่อของคุณ">
     <input type="password" id="authPass" class="custom-input" placeholder="ใส่รหัส PIN">
     <button class="btn-auth" onclick="handleAuth()">เข้าสู่ระบบ</button>
+    
+    <div class="auth-footer-links">
+      <span onclick="alert('กรุณาติดต่อแอดมินเพื่อลงทะเบียน')">ลงทะเบียนสมาชิก</span>
+      <span onclick="alert('กรุณาเข้าสู่ระบบก่อนเพื่อเปลี่ยน PIN')">เปลี่ยนรหัส PIN</span>
+    </div>
+    <div class="close-window-text">ปิดหน้าต่าง</div>
   </div>
 
   <div id="sectionApp" class="hidden">
@@ -162,13 +209,13 @@
         <input type="text" id="bet" class="app-select" style="flex:2" placeholder="เช่น 5">
         <select id="unit" class="app-select" style="flex:1">
           <option value="1">หน่วย</option>
-<option value="10">สิบ</option>
-<option value="100">ร้อย</option>
-<option value="1000">พัน</option>
-<option value="10000">หมื่น</option>
-<option value="100000">แสน</option>
-<option value="1000000" selected>ล้าน</option>
-</select>
+          <option value="10">สิบ</option>
+          <option value="100">ร้อย</option>
+          <option value="1000">พัน</option>
+          <option value="10000">หมื่น</option>
+          <option value="100000">แสน</option>
+          <option value="1000000" selected>ล้าน</option>
+        </select>
       </div>
       <div style="display:flex; gap:10px;">
         <div style="flex:1">
@@ -227,7 +274,6 @@
 </div>
 
 <script type="module">
-  // --- 🔥 Firebase Initialization ---
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue, set, push, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -245,7 +291,6 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
-  // --- Variables ---
   let users = {};
   let gangs = [];
   let locs = [];
@@ -260,7 +305,6 @@
     {id: 'guest', label: 'ทั่วไป'}
   ];
 
-  // --- Realtime Sync ---
   onValue(ref(db, 'users'), (snapshot) => {
     users = snapshot.val() || {};
     const hasJaokha = Object.values(users).some(u => u.user === 'Jaokha');
@@ -288,7 +332,6 @@
     renderHistory();
   });
 
-  // --- Functions (Expose to window) ---
   window.handleAuth = function() {
     const u = document.getElementById('authUser').value.trim();
     const p = document.getElementById('authPass').value.trim();
@@ -404,30 +447,19 @@
     const unit = document.getElementById('unit').value == 1000000 ? 'M' : '';
     const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nเดิมพัน: ${bet}${unit}\nจำนวน: ${document.getElementById('rnd').value} ไฟต์ | คูลดาวน์: ${document.getElementById('cd').value}\nสถานที่: ${document.getElementById('loc').value}\n<@651025174338076683> <@537589376096665601>`;
     document.getElementById('preview-box').innerText = msg;
-    
     const now = new Date();
     const timeStr = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    
-    push(ref(db, 'history'), {
-      text: msg,
-      author: currentUser.user,
-      time: timeStr
-    });
+    push(ref(db, 'history'), { text: msg, author: currentUser.user, time: timeStr });
   };
 
   window.copyText = function() { 
     const previewText = document.getElementById('preview-box').innerText;
     if(!previewText) return;
-
     navigator.clipboard.writeText(previewText).then(() => {
       const btn = document.getElementById('btnCopy');
       btn.classList.add('btn-copy-success');
       btn.innerText = "✅ คัดลอกสำเร็จ!";
-      
-      setTimeout(() => {
-        btn.classList.remove('btn-copy-success');
-        btn.innerText = "💗 คัดลอกข้อความ";
-      }, 2000);
+      setTimeout(() => { btn.classList.remove('btn-copy-success'); btn.innerText = "💗 คัดลอกข้อความ"; }, 2000);
     }); 
   };
 
