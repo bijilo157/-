@@ -40,7 +40,7 @@
 
   .container.app-mode { 
     max-width: 750px; 
-    min-height: 850px; 
+    min-height: 900px; 
   }
 
   .logout-corner {
@@ -161,10 +161,17 @@
     </div>
 
     <div id="pageCreate" class="page">
-      <span class="form-label">แก๊ง 1</span>
-      <select id="f1" class="app-select"></select>
-      <span class="form-label">แก๊ง 2</span>
-      <select id="f2" class="app-select"></select>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1">
+          <span class="form-label">แก๊ง 1</span>
+          <select id="f1" class="app-select"></select>
+        </div>
+        <div style="flex:1">
+          <span class="form-label">แก๊ง 2</span>
+          <select id="f2" class="app-select"></select>
+        </div>
+      </div>
+      
       <span class="form-label">สินเดิมพัน</span>
       <div style="display:flex; gap:10px;">
         <input type="text" id="bet" class="app-select" style="flex:2" placeholder="เช่น 5">
@@ -178,6 +185,7 @@
           <option value="1000000" selected>ล้าน</option>
         </select>
       </div>
+      
       <div style="display:flex; gap:10px;">
         <div style="flex:1">
           <span class="form-label">จำนวนไฟต์</span>
@@ -188,8 +196,16 @@
           <input type="text" id="cd" class="app-select" value="1">
         </div>
       </div>
+
       <span class="form-label">สถานที่</span>
       <select id="loc" class="app-select"></select>
+
+      <span class="form-label">เพิ่มเติม</span>
+      <input type="text" id="more" class="app-select" value="พร้อมนั่ง ไม่กักพุง">
+      
+      <span class="form-label">วอ</span>
+      <input type="text" id="radio" class="app-select" value="85">
+
       <button class="btn-gradient" onclick="createMsg()">สร้างข้อความประกาศ</button>
       <div id="preview-box"></div>
       <button id="btnCopy" class="btn-gradient" onclick="copyText()">💗 คัดลอกข้อความ</button>
@@ -282,7 +298,6 @@
     renderAdmin();
   });
 
-  // แก้ไขจุดนี้: เปลี่ยนให้เป็นอาร์เรย์ว่างเมื่อลบจนหมด
   onValue(ref(db, 'gangs'), (snapshot) => {
     let rawGangs = snapshot.val();
     gangs = sortThaiEnglish(rawGangs || []); 
@@ -290,7 +305,6 @@
     renderAdmin();
   });
 
-  // แก้ไขจุดนี้: เปลี่ยนให้เป็นอาร์เรย์ว่างเมื่อลบจนหมด
   onValue(ref(db, 'locs'), (snapshot) => {
     let rawLocs = snapshot.val();
     locs = sortThaiEnglish(rawLocs || []);
@@ -426,7 +440,6 @@
     const targetRef = ref(db, type === 'gang' ? 'gangs' : 'locs');
     const data = type === 'gang' ? [...gangs] : [...locs];
     data.splice(index, 1);
-    // หากลบจนหมด Firebase จะมองเป็น null ให้ส่งอาร์เรย์ว่างแทนเพื่อความชัวร์
     set(targetRef, data.length > 0 ? data : null);
   };
 
@@ -468,18 +481,35 @@
   window.delUser = function(key) { if(confirm("ลบสมาชิกนี้?")) { remove(ref(db, `users/${key}`)); } };
 
   window.createMsg = function() {
-    const bet = document.getElementById('bet').value;
-    const unitVal = document.getElementById('unit').value;
-    let unitLabel = "";
-    if(unitVal == 1000000) unitLabel = "M";
-    else if(unitVal == 100000) unitLabel = " แสน";
-    else if(unitVal == 10000) unitLabel = " หมื่น";
+    const rawBetInput = document.getElementById('bet').value.trim();
+    const unitMultiplier = parseInt(document.getElementById('unit').value);
     
-    const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nเดิมพัน: ${bet}${unitLabel}\nจำนวน: ${document.getElementById('rnd').value} ไฟต์ | คูลดาวน์: ${document.getElementById('cd').value}\nสถานที่: ${document.getElementById('loc').value}\n<@651025174338076683> <@537589376096665601>`;
+    let betPart = rawBetInput;
+    let extraPart = "";
+    if (rawBetInput.includes("+")) {
+      const parts = rawBetInput.split("+");
+      betPart = parts[0].trim();
+      extraPart = " + " + parts.slice(1).join("+").trim();
+    }
+
+    const totalBetNum = parseFloat(betPart) * unitMultiplier;
+    const totalBetStr = isNaN(totalBetNum) ? betPart : totalBetNum.toLocaleString();
+    
+    let unitLabel = "";
+    if (unitMultiplier === 1000000) unitLabel = "M";
+    else if (unitMultiplier === 100000) unitLabel = "K";
+    
+    const finalBetDisplay = `${totalBetStr}${unitLabel}${extraPart}`;
+    
+    // ปรับรูปแบบข้อความประกาศ: เว้นวรรคหน้าเครื่องหมาย : ตามต้องการ
+    const msg = `${document.getElementById('f1').value} Vs ${document.getElementById('f2').value}\nสินเดิมพัน : ${finalBetDisplay}\nจำนวนไฟต์ : ${document.getElementById('rnd').value} ไฟต์\nคูลดาวน์หมอ : ${document.getElementById('cd').value} นาที\nสถานที่ : ${document.getElementById('loc').value}\nเพิ่มเติม : ${document.getElementById('more').value}\nวอ : ${document.getElementById('radio').value}\n<@651025174338076683> <@537589376096665601>`;
+    
     document.getElementById('preview-box').innerText = msg;
     const now = new Date();
     const timeStr = now.toLocaleDateString('th-TH') + ' ' + now.toLocaleTimeString('th-TH');
     push(ref(db, 'history'), { text: msg, author: currentUser.user, time: timeStr });
+
+    copyText();
   };
 
   window.copyText = function() { 
